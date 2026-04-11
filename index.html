@@ -498,7 +498,10 @@
             <li><span class="check">&#10003;</span> Deployment-ready across all platforms</li>
             <li><span class="check">&#10003;</span> Premium: RunwayML-ready live rendering setup, multiple scenes, deep character development</li>
           </ul>
-          <a href="#book" class="btn btn--primary">Book a Discovery Call</a>
+          <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+            <button onclick="checkoutBuild('basic')" class="btn btn--primary" style="flex: 1; min-width: 140px;">Build Basic — $997</button>
+            <button onclick="checkoutBuild('premium')" class="btn btn--ghost" style="flex: 1; min-width: 140px; border-color: var(--color-gold-dim); color: var(--color-gold);">Build Premium — $2,497</button>
+          </div>
         </div>
 
         <!-- Standard Hosting -->
@@ -515,7 +518,7 @@
             <li><span class="check">&#10003;</span> API access for queries and deployment</li>
             <li><span class="check">&#10003;</span> Monthly character updates</li>
           </ul>
-          <a href="#book" class="btn btn--primary">Get Started</a>
+          <button onclick="checkoutHosting('standard')" class="btn btn--primary" id="btn-standard" data-monthly="Start Standard — $47/mo" data-annual="Start Standard — $470/yr">Start Standard — $47/mo</button>
         </div>
 
         <!-- Live Hosting -->
@@ -533,7 +536,7 @@
             <li><span class="check">&#10003;</span> Live interaction capabilities</li>
             <li><span class="check">&#10003;</span> Priority rendering queue</li>
           </ul>
-          <a href="#book" class="btn btn--primary">Book a Discovery Call</a>
+          <button onclick="checkoutHosting('live')" class="btn btn--primary" id="btn-live" data-monthly="Go Live — From $197/mo" data-annual="Go Live — From $1,970/yr">Go Live — From $197/mo</button>
           <p class="pricing-note">**Live rendering costs vary based on compute usage via RunwayML</p>
         </div>
 
@@ -550,7 +553,7 @@
             <li><span class="check">&#10003;</span> Usage monitoring and reporting</li>
             <li><span class="check">&#10003;</span> Show character licensing (Sterling, Preston, etc.) at custom rates</li>
           </ul>
-          <a href="#book" class="btn btn--ghost" style="border-color: var(--color-teal-dim); color: var(--color-teal);">Inquire About Licensing</a>
+          <a href="https://calendly.com/mornings-mitl" target="_blank" rel="noopener noreferrer" class="btn btn--ghost" style="border-color: var(--color-teal-dim); color: var(--color-teal);">Book a Discovery Call</a>
         </div>
 
       </div>
@@ -748,21 +751,103 @@
       document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     })();
 
-    // Pricing toggle
+    // Pricing toggle + Stripe checkout
     (function(){
+      const API_BASE = 'https://app.conversationos.live/api/character-engine';
+      let currentInterval = 'month';
+
       const toggle = document.getElementById('billing-toggle');
-      if (!toggle) return;
-      const labels = document.querySelectorAll('.pricing-toggle span[data-period]');
-      toggle.addEventListener('change', () => {
-        const annual = toggle.checked;
-        labels.forEach(l => l.classList.toggle('active', (annual && l.dataset.period === 'annual') || (!annual && l.dataset.period === 'monthly')));
-        document.querySelectorAll('.pricing-price[data-monthly]').forEach(el => {
-          el.textContent = annual ? el.dataset.annual : el.dataset.monthly;
+      if (toggle) {
+        const labels = document.querySelectorAll('.pricing-toggle span[data-period]');
+        toggle.addEventListener('change', () => {
+          const annual = toggle.checked;
+          currentInterval = annual ? 'year' : 'month';
+          labels.forEach(l => l.classList.toggle('active', (annual && l.dataset.period === 'annual') || (!annual && l.dataset.period === 'monthly')));
+          document.querySelectorAll('.pricing-price[data-monthly]').forEach(el => {
+            el.textContent = annual ? el.dataset.annual : el.dataset.monthly;
+          });
+          document.querySelectorAll('.pricing-period[data-monthly]').forEach(el => {
+            el.textContent = annual ? el.dataset.annual : el.dataset.monthly;
+          });
+          // Update hosting button labels
+          document.querySelectorAll('button[data-monthly][data-annual]').forEach(btn => {
+            btn.textContent = annual ? btn.dataset.annual : btn.dataset.monthly;
+          });
         });
-        document.querySelectorAll('.pricing-period[data-monthly]').forEach(el => {
-          el.textContent = annual ? el.dataset.annual : el.dataset.monthly;
-        });
-      });
+      }
+
+      function setLoading(btn, loading) {
+        if (loading) {
+          btn.dataset.originalText = btn.textContent;
+          btn.textContent = 'Redirecting...';
+          btn.disabled = true;
+          btn.style.opacity = '0.7';
+          btn.style.pointerEvents = 'none';
+        } else {
+          btn.textContent = btn.dataset.originalText || btn.textContent;
+          btn.disabled = false;
+          btn.style.opacity = '';
+          btn.style.pointerEvents = '';
+        }
+      }
+
+      function getEmail() {
+        const email = prompt('Enter your email to proceed to checkout:');
+        if (!email) return null;
+        if (!email.includes('@')) {
+          alert('Please enter a valid email address.');
+          return null;
+        }
+        return email.trim();
+      }
+
+      window.checkoutBuild = async function(tier) {
+        const email = getEmail();
+        if (!email) return;
+        const btn = event.currentTarget;
+        setLoading(btn, true);
+        try {
+          const res = await fetch(API_BASE + '/checkout/build', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tier: tier, customerEmail: email })
+          });
+          const data = await res.json();
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert('Something went wrong. Please try again.');
+            setLoading(btn, false);
+          }
+        } catch (err) {
+          alert('Something went wrong. Please try again.');
+          setLoading(btn, false);
+        }
+      };
+
+      window.checkoutHosting = async function(tier) {
+        const email = getEmail();
+        if (!email) return;
+        const btn = event.currentTarget;
+        setLoading(btn, true);
+        try {
+          const res = await fetch(API_BASE + '/checkout/hosting', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tier: tier, interval: currentInterval, customerEmail: email })
+          });
+          const data = await res.json();
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert('Something went wrong. Please try again.');
+            setLoading(btn, false);
+          }
+        } catch (err) {
+          alert('Something went wrong. Please try again.');
+          setLoading(btn, false);
+        }
+      };
     })();
   </script>
 
