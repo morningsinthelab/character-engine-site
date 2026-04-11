@@ -21,7 +21,7 @@ Each market page follows the SAME structure as the main characterengine.live pag
 
 8. **How It Works** — Same 4 steps, same structure. Minor copy tweaks if needed for market context.
 
-9. **Final CTA** — Market-specific headline. "Book a 30-minute discovery call. We'll explore what a living character can do for your [market-specific thing]." Link: https://calendly.com/mornings-mitl
+9. **Final CTA** — Market-specific headline. "Chat with Sophia" button that opens the Sophia embed widget. The Sophia embed script loads on every page with `data-product="character-engine"` and `data-theme="dark"`.
 
 10. **Footer** — Includes two sections:
     - "Character Engine is also for:" with links to ALL other market pages
