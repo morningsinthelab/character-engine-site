@@ -496,7 +496,7 @@
       <h2 class="fade-in">Ready to Give Your Restaurant<br>a <span class="accent">Personality?</span></h2>
       <p class="fade-in">Book a 30-minute discovery call. We'll explore what a living character can do for your restaurant.</p>
       <div class="fade-in">
-        <a href="https://calendly.com/mornings-mitl" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--large">Book a Discovery Call</a>
+        <a href="#" onclick="event.preventDefault(); document.querySelector('sophia-embed')?.shadowRoot?.querySelector('.sophia-bubble')?.click();" class="btn btn--primary btn--large">Chat with Sophia</a>
       </div>
       <p class="fade-in" style="font-size: var(--text-sm); color: var(--color-text-muted); margin-top: var(--space-2);">Powered by ConversationOS</p>
     </div>
@@ -578,6 +578,13 @@
       document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     })();
   </script>
+
+  <script
+    src="https://app.conversationos.live/sophia-embed.js"
+    data-product="character-engine"
+    data-theme="dark"
+    data-accent-color="#7c3aed"
+  ></script>
 
 </body>
 </html>
