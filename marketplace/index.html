@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Marketplace — Guest Engine</title>
+<meta name="description" content="Browse AI characters — license them for your show, podcast, or content. Studio characters, correspondents, and digital twins available for licensing.">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://characterengine.live/marketplace/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guest Engine">
+<meta property="og:title" content="Character Marketplace — Guest Engine">
+<meta property="og:description" content="Browse AI characters — license them for your show, podcast, or content. Studio characters, correspondents, and digital twins available for licensing.">
+<meta property="og:url" content="https://characterengine.live/marketplace/">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Character Marketplace — Guest Engine">
+<meta name="twitter:description" content="Browse AI characters — license them for your show, podcast, or content.">
+
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #020617;
+    --card-bg: rgba(0,0,0,0.60);
+    --card-bg-solid: #0a0f1e;
+    --card-border: rgba(255,255,255,0.10);
+    --card-hover: rgba(255,255,255,0.04);
+
+    --gold: #fbbf24;
+    --gold-dim: rgba(251,191,36,0.50);
+    --gold-faint: rgba(251,191,36,0.10);
+    --silver: #94a3b8;
+    --silver-dim: rgba(148,163,184,0.40);
+    --silver-faint: rgba(148,163,184,0.08);
+
+    --green: #38b86e;
+    --green-dim: rgba(56,184,110,0.40);
+    --red: #dc2626;
+
+    /* Character type colors */
+    --studio: #fbbf24;
+    --studio-dim: rgba(251,191,36,0.30);
+    --studio-faint: rgba(251,191,36,0.08);
+    --correspondent: #4db8c7;
+    --correspondent-dim: rgba(77,184,199,0.30);
+    --correspondent-faint: rgba(77,184,199,0.08);
+    --twin: #9b6fd4;
+    --twin-dim: rgba(155,111,212,0.30);
+    --twin-faint: rgba(155,111,212,0.08);
+    --licensable: #38b86e;
+    --licensable-dim: rgba(56,184,110,0.30);
+    --licensable-faint: rgba(56,184,110,0.08);
+
+    --h: #ffffff;
+    --p: rgba(255,255,255,0.60);
+    --m: rgba(255,255,255,0.40);
+    --badge-bg: rgba(255,255,255,0.04);
+    --badge-border: rgba(255,255,255,0.10);
+    --r: 16px;
+
+    --font-display: 'Cabinet Grotesk', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg); color: var(--h);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    position:sticky; top:0; z-index:100;
+    background:rgba(2,6,23,0.88);
+    backdrop-filter:blur(24px);
+    border-bottom:1px solid var(--card-border);
+    padding:0 48px; height:56px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-l { display:flex; align-items:center; gap:32px; }
+  .logo { font-family:var(--font-display); font-weight:900; font-size:18px; letter-spacing:-0.04em; }
+  .logo b { color:var(--gold); }
+  .nav-links { display:flex; gap:24px; }
+  .nav-links a {
+    font-size:12.5px; font-weight:600; color:var(--m);
+    text-decoration:none; padding:4px 0;
+    border-bottom:2px solid transparent; transition:all 0.2s;
+  }
+  .nav-links a:hover { color:var(--p); }
+  .nav-links a.on { color:var(--gold); border-color:var(--gold); }
+  .nav-r { display:flex; gap:10px; }
+  .btn { font-size:12.5px; font-weight:600; padding:7px 16px; border-radius:8px; border:none; cursor:pointer; font-family:var(--font-body); }
+  .btn-g { background:transparent; color:var(--p); }
+  .btn-g:hover { color:var(--h); }
+  .btn-y { background:var(--gold); color:#020617; font-weight:700; }
+  .btn-y:hover { background:#fcd34d; }
+
+  /* ─── HERO ─── */
+  .hero { padding:36px 48px 0; max-width:1440px; margin:0 auto; position:relative; }
+  .hero::before {
+    content:''; position:absolute; top:-80px; left:60px;
+    width:600px; height:300px; border-radius:50%;
+    background:radial-gradient(circle, rgba(155,111,212,0.14) 0%, rgba(155,111,212,0.04) 50%, transparent 70%);
+    pointer-events:none; filter:blur(60px); z-index:0;
+  }
+  .hero-row { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px; position:relative; }
+  .hero h1 { font-family:var(--font-display); font-size:36px; font-weight:900; letter-spacing:-0.05em; }
+  .hero h1 em { font-style:normal; color:var(--gold); }
+  .hero .sub { font-size:13.5px; color:var(--m); margin-top:3px; }
+  .stats { display:flex; gap:24px; }
+  .st { text-align:center; }
+  .st-v { font-family:var(--font-display); font-size:22px; font-weight:900; }
+  .st-l { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--m); }
+  .st-v.gold { color:var(--gold); }
+  .st-v.cyan { color:var(--correspondent); }
+  .st-v.purple { color:var(--twin); }
+  .st-v.green { color:var(--licensable); }
+
+  /* Type legend */
+  .type-legend {
+    padding:0 48px 6px; max-width:1440px; margin:0 auto;
+    display:flex; gap:16px; align-items:center;
+    font-size:10px; font-weight:600; color:var(--m);
+  }
+  .type-legend .leg { display:flex; align-items:center; gap:4px; }
+  .type-legend .dot { width:7px; height:7px; border-radius:50%; }
+
+  /* ─── CONTROLS ─── */
+  .ctrl {
+    padding:0 48px 18px; max-width:1440px; margin:0 auto;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .search {
+    flex:1; min-width:240px; max-width:360px;
+    padding:9px 14px 9px 38px; border-radius:10px;
+    border:1px solid var(--card-border); background:var(--card-bg);
+    color:var(--h); font-size:13px; font-family:var(--font-body); outline:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffffff66' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:12px center;
+  }
+  .search:focus { border-color:var(--gold-dim); }
+  .search::placeholder { color:var(--m); }
+  .chips { display:flex; gap:5px; flex-wrap:wrap; }
+  .ch {
+    padding:6px 12px; border-radius:20px; font-size:11px; font-weight:600;
+    border:1px solid var(--card-border); background:transparent; color:var(--m); cursor:pointer;
+    transition:all 0.15s;
+  }
+  .ch:hover { color:var(--p); }
+  .ch.on { border-color:var(--gold-dim); background:var(--gold-faint); color:var(--gold); }
+  .ch[data-type="studio"].on { border-color:var(--studio-dim); background:var(--studio-faint); color:var(--studio); }
+  .ch[data-type="correspondent"].on { border-color:var(--correspondent-dim); background:var(--correspondent-faint); color:var(--correspondent); }
+  .ch[data-type="twin"].on { border-color:var(--twin-dim); background:var(--twin-faint); color:var(--twin); }
+  .ch[data-type="license"].on { border-color:var(--licensable-dim); background:var(--licensable-faint); color:var(--licensable); }
+  .ct { margin-left:auto; font-size:11px; color:var(--m); }
+  .ct strong { color:var(--p); }
+
+  /* ═══════════════════════════════════════
+     GRID — Magazine layout matching directory
+     ═══════════════════════════════════════ */
+  .grid {
+    padding:0 48px 60px; max-width:1440px; margin:0 auto;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: auto;
+    gap:14px;
+  }
+
+  /* ═══════════════════════════════════════
+     HERO CARD — Featured Studio Characters (2-col span)
+     ═══════════════════════════════════════ */
+  .card-hero {
+    grid-column: span 2;
+    background: var(--card-bg);
+    border: 1px solid rgba(251,191,36,0.18);
+    border-radius: var(--r);
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    background:
+      radial-gradient(ellipse at 10% 30%, rgba(251,191,36,0.14) 0%, rgba(251,191,36,0.03) 50%, transparent 70%),
+      linear-gradient(155deg, #0d1225 0%, #141108 100%);
+    box-shadow: 0 0 60px rgba(251,191,36,0.10), 0 0 100px rgba(251,191,36,0.04);
+  }
+  .card-hero:hover {
+    border-color: rgba(251,191,36,0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 0 80px rgba(251,191,36,0.16), 0 0 120px rgba(251,191,36,0.06), 0 14px 44px rgba(0,0,0,0.4);
+  }
+  .card-hero::after {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height:3px; border-radius:var(--r) var(--r) 0 0;
+    background: linear-gradient(90deg, var(--studio), rgba(251,191,36,0.2));
+  }
+  .card-hero::before {
+    content:''; position:absolute; top:14px; bottom:14px; left:0;
+    width:3px; border-radius:0 2px 2px 0;
+    background: var(--gold); z-index:2;
+  }
+
+  .hero-photo {
+    width: 220px; min-height: 260px; flex-shrink:0;
+    position: relative; overflow: hidden;
+  }
+  .hero-photo img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter: contrast(1.05) saturate(1.1);
+  }
+  .hero-photo::after {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(to right, transparent 60%, rgba(0,0,0,0.5));
+  }
+
+  .hero-content {
+    flex:1; padding:22px 24px; display:flex; flex-direction:column;
+    justify-content:center; gap:10px; min-width:0;
+  }
+  .hero-identity { display:flex; flex-direction:column; gap:4px; }
+  .hero-nm {
+    font-family: var(--font-display); font-size:24px; font-weight:800;
+    letter-spacing:-0.04em; display:flex; align-items:center; gap:8px;
+  }
+  .hero-tl {
+    font-family: var(--font-display); font-size:14px; font-weight:500;
+    color:var(--p); letter-spacing:-0.01em;
+  }
+  .hero-badges { display:flex; gap:6px; flex-wrap:wrap; }
+  .hero-qt {
+    font-size:14px; font-style:italic; color:rgba(255,255,255,0.78);
+    line-height:1.6; position:relative; padding-left:16px;
+    letter-spacing:-0.01em;
+  }
+  .hero-qt::before {
+    content:''; position:absolute; left:0; top:2px; bottom:2px;
+    width:3px; border-radius:2px; background:var(--gold);
+  }
+  .hero-topics { display:flex; flex-wrap:wrap; gap:6px; }
+  .hero-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:10px; border-top:1px solid rgba(255,255,255,0.06);
+    margin-top:auto;
+  }
+
+  /* ═══ PRICING BADGE ON HERO ═══ */
+  .hero-price {
+    display:flex; align-items:center; gap:8px;
+  }
+  .price-tag {
+    font-family:var(--font-display); font-weight:800; font-size:14px;
+    color:var(--gold); background:var(--gold-faint);
+    padding:4px 10px; border-radius:6px;
+    border:1px solid rgba(251,191,36,0.15);
+  }
+  .price-label { font-size:11px; color:var(--m); }
+
+  /* ═══════════════════════════════════════
+     STANDARD CARD — Character card
+     ═══════════════════════════════════════ */
+  .card {
+    background: var(--card-bg); border:1px solid var(--card-border);
+    border-radius: var(--r); cursor:pointer;
+    transition:all 0.25s; overflow:hidden;
+    display:flex; flex-direction:column;
+    position:relative;
+    backdrop-filter: blur(12px);
+  }
+  .card:hover {
+    border-color:rgba(255,255,255,0.16); background:var(--card-hover);
+    transform:translateY(-3px);
+    box-shadow:0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  /* Type top bar */
+  .card::after {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height:2px; border-radius:var(--r) var(--r) 0 0;
+    background:transparent;
+  }
+  [data-type="studio"]::after { background:linear-gradient(90deg,var(--studio),rgba(251,191,36,0.3)); }
+  [data-type="correspondent"]::after { background:linear-gradient(90deg,var(--correspondent),rgba(77,184,199,0.3)); }
+  [data-type="twin"]::after { background:linear-gradient(90deg,var(--twin),rgba(155,111,212,0.3)); }
+
+  /* Tier: Left accent stripe */
+  .card::before {
+    content:''; position:absolute; top:12px; bottom:12px; left:0;
+    width:3px; border-radius:0 2px 2px 0;
+    background:transparent; z-index:2;
+  }
+  .card.licensable::before { background:var(--licensable); }
+
+  /* Photo area */
+  .card-photo {
+    width:100%; height:180px; overflow:hidden;
+    position:relative; background:linear-gradient(135deg, #0f172a, #1a2540);
+  }
+  .card-photo img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition: transform 0.4s, filter 0.3s;
+  }
+  .card:hover .card-photo img { transform: scale(1.04); }
+  .card-photo::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:80px;
+    background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    pointer-events:none;
+  }
+
+  /* Initials fallback for characters without images */
+  .card-photo .initials {
+    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:900; font-size:48px;
+    color:rgba(255,255,255,0.08); letter-spacing:-0.04em;
+    background:linear-gradient(135deg, #0f172a, #1a2540);
+  }
+  [data-type="correspondent"] .initials { background:linear-gradient(135deg, #0a1a20, #0f2530); }
+  [data-type="twin"] .initials { background:linear-gradient(135deg, #140f25, #1a1040); }
+
+  /* Photo overlay badges */
+  .photo-overlay {
+    position:absolute; bottom:12px; left:14px; right:14px; z-index:2;
+    display:flex; align-items:center; gap:6px;
+  }
+  .photo-overlay .tr {
+    font-family: var(--font-display);
+    font-size:9px; font-weight:800; text-transform:uppercase;
+    letter-spacing:0.06em; padding:3px 8px; border-radius:4px;
+  }
+  .tr.studio-badge { background:var(--studio); color:#020617; }
+  .tr.corr-badge { background:var(--correspondent); color:#020617; }
+  .tr.twin-badge { background:var(--twin); color:#020617; }
+  .tr.license-badge { background:var(--licensable); color:#020617; }
+
+  .photo-price {
+    margin-left:auto;
+    font-family:var(--font-display); font-weight:800; font-size:11px;
+    color:var(--gold); background:rgba(0,0,0,0.7);
+    padding:3px 8px; border-radius:4px;
+    border:1px solid rgba(251,191,36,0.2);
+  }
+
+  /* Card body */
+  .card-body { padding:16px 18px 14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+
+  .card-nm {
+    font-family:var(--font-display); font-size:17px; font-weight:800;
+    letter-spacing:-0.03em; line-height:1.2;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .card-role {
+    font-family:var(--font-display); font-size:12px; font-weight:500;
+    color:var(--p); letter-spacing:-0.01em;
+    display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;
+  }
+
+  /* Badges */
+  .card-badges { display:flex; gap:5px; flex-wrap:wrap; }
+  .bg {
+    display:inline-flex; align-items:center; gap:3px;
+    font-size:10px; font-weight:600; padding:2px 8px; border-radius:5px;
+  }
+  .bg-type {
+    text-transform:uppercase; letter-spacing:0.04em; font-size:9.5px;
+  }
+  .bg-type[data-t="studio"] { background:var(--studio-faint); border:1px solid rgba(251,191,36,0.09); color:var(--studio); }
+  .bg-type[data-t="correspondent"] { background:var(--correspondent-faint); border:1px solid rgba(77,184,199,0.09); color:var(--correspondent); }
+  .bg-type[data-t="twin"] { background:var(--twin-faint); border:1px solid rgba(155,111,212,0.09); color:var(--twin); }
+  .bg-license { background:var(--licensable-faint); border:1px solid rgba(56,184,110,0.09); color:var(--licensable); }
+  .bg-license::before { content:''; width:4px; height:4px; border-radius:50%; background:var(--licensable); flex-shrink:0; }
+
+  /* Description / personality */
+  .card-desc {
+    font-size:12.5px; font-style:italic; color:var(--p);
+    line-height:1.55; position:relative; padding-left:14px;
+    display:-webkit-box; -webkit-line-clamp:2;
+    -webkit-box-orient:vertical; overflow:hidden;
+    transition:all 0.3s;
+  }
+  .card:hover .card-desc { -webkit-line-clamp:3; }
+  .card-desc::before {
+    content:''; position:absolute; left:0; top:2px; bottom:2px;
+    width:3px; border-radius:2px;
+  }
+  [data-type="studio"] .card-desc::before { background:var(--studio); }
+  [data-type="correspondent"] .card-desc::before { background:var(--correspondent); }
+  [data-type="twin"] .card-desc::before { background:var(--twin); }
+
+  /* Traits / tags */
+  .card-traits { display:flex; flex-wrap:wrap; gap:5px; margin-top:auto; }
+  .trait {
+    font-size:10.5px; font-weight:500; padding:3px 9px;
+    border-radius:6px; white-space:nowrap;
+    display:flex; align-items:center; gap:5px;
+    max-width:100%; overflow:hidden; text-overflow:ellipsis;
+  }
+  .trait::before { content:''; width:4px; height:4px; border-radius:50%; flex-shrink:0; }
+  [data-type="studio"] .trait { background:rgba(251,191,36,0.03); border:1px solid rgba(251,191,36,0.09); color:var(--p); }
+  [data-type="studio"] .trait::before { background:var(--studio); }
+  [data-type="correspondent"] .trait { background:rgba(77,184,199,0.03); border:1px solid rgba(77,184,199,0.09); color:var(--p); }
+  [data-type="correspondent"] .trait::before { background:var(--correspondent); }
+  [data-type="twin"] .trait { background:rgba(155,111,212,0.03); border:1px solid rgba(155,111,212,0.09); color:var(--p); }
+  [data-type="twin"] .trait::before { background:var(--twin); }
+  .trait-more { font-size:10px; color:var(--m); font-weight:600; padding:3px 6px; }
+
+  /* Footer */
+  .card-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 18px 14px; margin-top:auto;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  .ft-l {
+    display:flex; align-items:center; gap:6px;
+    font-size:10.5px; color:var(--m); font-weight:500;
+  }
+  .ft-show { font-size:10px; color:var(--m); }
+  .ft-show b { color:var(--p); }
+
+  .vp {
+    display:flex; align-items:center; gap:5px;
+    font-size:11px; font-weight:600; color:var(--m);
+    transition:color 0.2s; flex-shrink:0;
+  }
+  .card:hover .vp, .card-hero:hover .vp { color:var(--gold); }
+  .card:hover .vp .ar, .card-hero:hover .vp .ar { stroke:var(--gold); }
+  .vp .ar { width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2; }
+
+  .license-btn {
+    font-size:10.5px; font-weight:700; color:var(--licensable);
+    display:flex; align-items:center; gap:4px;
+    transition: color 0.2s;
+  }
+  .card:hover .license-btn { color:var(--gold); }
+
+  /* AI indicator dot */
+  .ai-dot {
+    width:7px; height:7px; border-radius:50%;
+    background:var(--twin); box-shadow:0 0 6px var(--twin-dim);
+    flex-shrink:0;
+    animation:pulse-ai 3s ease-in-out infinite;
+  }
+  @keyframes pulse-ai {
+    0%,100% { opacity:1; box-shadow:0 0 4px var(--twin-dim); }
+    50% { opacity:0.5; box-shadow:0 0 10px rgba(155,111,212,0.2); }
+  }
+
+  /* ═══ VIP VERTICAL (single-col featured) ═══ */
+  .card-hero-vert {
+    grid-column: span 1;
+    background:
+      radial-gradient(ellipse at 50% 10%, rgba(251,191,36,0.12) 0%, rgba(251,191,36,0.03) 50%, transparent 70%),
+      linear-gradient(155deg, #0d1225 0%, #141108 100%);
+    border: 1px solid rgba(251,191,36,0.18);
+    border-radius: var(--r);
+    cursor: pointer; overflow: hidden;
+    transition: all 0.3s; position: relative;
+    display: flex; flex-direction: column;
+    box-shadow: 0 0 48px rgba(251,191,36,0.08), 0 0 80px rgba(251,191,36,0.03);
+  }
+  .card-hero-vert:hover {
+    border-color: rgba(251,191,36,0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 0 70px rgba(251,191,36,0.14), 0 0 110px rgba(251,191,36,0.05), 0 14px 44px rgba(0,0,0,0.4);
+  }
+  .card-hero-vert::after {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height:3px; border-radius:var(--r) var(--r) 0 0;
+    background: linear-gradient(90deg, var(--studio), rgba(251,191,36,0.2));
+  }
+  .card-hero-vert::before {
+    content:''; position:absolute; top:14px; bottom:14px; left:0;
+    width:3px; border-radius:0 2px 2px 0;
+    background: var(--gold); z-index:2;
+  }
+  .card-hero-vert .card-photo { height:210px; }
+  .card-hero-vert .card-nm { font-size:19px; }
+  .card-hero-vert .card-desc { font-size:13px; color:rgba(255,255,255,0.78); }
+  .card-hero-vert .card-photo img { filter: contrast(1.05) saturate(1.1); }
+
+  /* ═══ CORRESPONDENT VARIANT — teal accent ═══ */
+  .card-hero.corr-hero {
+    background:
+      radial-gradient(ellipse at 10% 30%, rgba(77,184,199,0.12) 0%, rgba(77,184,199,0.03) 50%, transparent 70%),
+      linear-gradient(155deg, #0d1825 0%, #081418 100%);
+    border-color: rgba(77,184,199,0.18);
+    box-shadow: 0 0 60px rgba(77,184,199,0.08), 0 0 100px rgba(77,184,199,0.03);
+  }
+  .card-hero.corr-hero:hover {
+    border-color: rgba(77,184,199,0.35);
+    box-shadow: 0 0 80px rgba(77,184,199,0.14), 0 0 120px rgba(77,184,199,0.05), 0 14px 44px rgba(0,0,0,0.4);
+  }
+  .card-hero.corr-hero::after { background: linear-gradient(90deg, var(--correspondent), rgba(77,184,199,0.2)); }
+  .card-hero.corr-hero::before { background: var(--correspondent); }
+  .card-hero.corr-hero .hero-qt::before { background: var(--correspondent); }
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1100px) {
+    .grid { grid-template-columns:repeat(2,1fr); }
+    .card-hero { grid-column:span 2; }
+    .hero-photo { width:180px; min-height:220px; }
+  }
+  @media(max-width:700px) {
+    .grid { grid-template-columns:1fr; }
+    .card-hero { grid-column:span 1; flex-direction:column; }
+    .hero-photo { width:100%; min-height:200px; height:200px; }
+    .hero,.ctrl,.grid,.type-legend { padding-left:16px; padding-right:16px; }
+    .nav { padding:0 16px; }
+    .hero-row { flex-direction:column; align-items:flex-start; gap:10px; }
+    .stats { flex-wrap:wrap; }
+    .nav-links { gap:12px; }
+    .nav-links a { font-size:11px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-l">
+    <div class="logo">Guest<b>ENGINE</b></div>
+    <div class="nav-links">
+      <a href="#">Directory</a>
+      <a href="#" class="on">Marketplace</a>
+      <a href="#">Shows</a>
+      <a href="#">Network</a>
+      <a href="#">Pricing</a>
+      <a href="#">Alumni</a>
+      <a href="#">Why</a>
+    </div>
+  </div>
+  <div class="nav-r">
+    <button class="btn btn-g">Log In</button>
+    <button class="btn btn-y">Sign Up</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-row">
+    <div>
+      <h1>Character <em>Marketplace</em></h1>
+      <p class="sub">Browse AI characters — license them for your show, podcast, or content</p>
+    </div>
+    <div class="stats">
+      <div class="st"><div class="st-v">100</div><div class="st-l">Characters</div></div>
+      <div class="st"><div class="st-v gold">22</div><div class="st-l">Studio</div></div>
+      <div class="st"><div class="st-v cyan">78</div><div class="st-l">Correspondents</div></div>
+      <div class="st"><div class="st-v green">3</div><div class="st-l">Licensable</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Type Legend -->
+<div class="type-legend">
+  <span style="color:var(--p); margin-right:4px;">Types:</span>
+  <span class="leg"><span class="dot" style="background:var(--studio)"></span> Studio</span>
+  <span class="leg"><span class="dot" style="background:var(--correspondent)"></span> Correspondent</span>
+  <span class="leg"><span class="dot" style="background:var(--twin)"></span> Digital Twin</span>
+  <span class="leg"><span class="dot" style="background:var(--licensable)"></span> Available for Licensing</span>
+</div>
+
+<div class="ctrl">
+  <input type="text" class="search" placeholder="Search by name, role, or description...">
+  <div class="chips">
+    <div class="ch on">All</div>
+    <div class="ch" data-type="studio">Studio Characters</div>
+    <div class="ch" data-type="correspondent">Correspondents</div>
+    <div class="ch" data-type="twin">Digital Twins</div>
+    <div class="ch" data-type="license">Available for Licensing</div>
+  </div>
+  <div class="ct"><strong>100</strong> characters</div>
+</div>
+
+<div class="grid">
+
+  <!-- ═══ HERO: Sophia — Studio / Lead AI Producer ═══ -->
+  <div class="card-hero" data-type="studio">
+    <div class="hero-photo">
+      <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop&crop=faces" alt="Sophia">
+    </div>
+    <div class="hero-content">
+      <div class="hero-identity">
+        <div class="hero-nm">Sophia <span class="ai-dot"></span> <span class="tr studio-badge">Studio</span></div>
+        <div class="hero-tl">Lead AI Producer — Guest Engine & MiTL Network</div>
+      </div>
+      <div class="hero-badges">
+        <span class="bg bg-type" data-t="studio">Studio Character</span>
+        <span class="bg bg-license">Available for Licensing</span>
+      </div>
+      <div class="hero-qt">I handle your prep — topic angles, talking points, green room briefing — so you arrive ready and the host has everything they need.</div>
+      <div class="hero-topics">
+        <span class="trait">Guest Prep</span>
+        <span class="trait">Show Production</span>
+        <span class="trait">Research</span>
+        <span class="trait">Scheduling</span>
+        <span class="trait-more" style="color:var(--gold);">+4</span>
+      </div>
+      <div class="hero-footer">
+        <div class="hero-price">
+          <span class="price-tag">$75/ep</span>
+          <span class="price-label">License for your show</span>
+        </div>
+        <div class="vp">
+          View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HERO VERT: Sterling — Studio / Anchor ═══ -->
+  <div class="card-hero-vert" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop&crop=faces" alt="Sterling">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+        <span class="photo-price">$75/ep</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Sterling</div>
+      <div class="card-role">News Anchor — MiTL Morning Wire</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio Character</span>
+        <span class="bg bg-license">Licensable</span>
+      </div>
+      <div class="card-desc">Gravitas meets algorithm. I deliver the morning wire with precision, authority, and just enough edge to keep you honest.</div>
+      <div class="card-traits">
+        <span class="trait">News Anchor</span>
+        <span class="trait">Morning Wire</span>
+        <span class="trait">Authoritative</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Recurring</div>
+      <div class="license-btn">License → </div>
+    </div>
+  </div>
+
+  <!-- ═══ Frankie — Studio / Recurring ═══ -->
+  <div class="card licensable" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=400&fit=crop&crop=faces" alt="Frankie">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+        <span class="photo-price">$75/ep</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Frankie</div>
+      <div class="card-role">Recurring Character — Entertainment</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+        <span class="bg bg-license">Licensable</span>
+      </div>
+      <div class="card-desc">Overconfident delivery meets under-disciplined research. I say things other characters won't — and I'm usually half right.</div>
+      <div class="card-traits">
+        <span class="trait">Entertainment</span>
+        <span class="trait">Comedy</span>
+        <span class="trait">Hot Takes</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Recurring</div>
+      <div class="license-btn">License → </div>
+    </div>
+  </div>
+
+  <!-- ═══ Preston — Studio / Finance ═══ -->
+  <div class="card" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=400&fit=crop&crop=faces" alt="Preston">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Preston</div>
+      <div class="card-role">Market Analyst & Finance Correspondent</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+      </div>
+      <div class="card-desc">I break down market moves before the opening bell. No hype, no FUD — just the numbers and what they actually mean for your day.</div>
+      <div class="card-traits">
+        <span class="trait">Markets</span>
+        <span class="trait">Finance</span>
+        <span class="trait">Pre-Market</span>
+        <span class="trait-more">+2</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Daily</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Tommy — Studio / Sports ═══ -->
+  <div class="card" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=400&fit=crop&crop=faces" alt="Tommy">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Tommy</div>
+      <div class="card-role">Sports Desk Producer — The Skeptic</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+      </div>
+      <div class="card-desc">I don't trust narratives until the numbers back them up. Every take gets pressure-tested. Every stat gets verified.</div>
+      <div class="card-traits">
+        <span class="trait">Sports</span>
+        <span class="trait">NFL</span>
+        <span class="trait">Analytics</span>
+        <span class="trait-more">+3</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Sports Desk</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HERO: Featured Correspondent Row ═══ -->
+  <div class="card-hero corr-hero" data-type="correspondent">
+    <div class="hero-photo">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop&crop=faces" alt="Colleen Marchetti-Burns">
+    </div>
+    <div class="hero-content">
+      <div class="hero-identity">
+        <div class="hero-nm">Colleen Marchetti-Burns <span class="ai-dot"></span> <span class="tr corr-badge">Correspondent</span></div>
+        <div class="hero-tl">MiTL Sports Desk — New York City · NFL Correspondent</div>
+      </div>
+      <div class="hero-badges">
+        <span class="bg bg-type" data-t="correspondent">Correspondent</span>
+      </div>
+      <div class="hero-qt">The NFL doesn't stop at the whistle. I cover the moves, the money, and the stories New York is talking about before anyone else.</div>
+      <div class="hero-topics">
+        <span class="trait">NFL</span>
+        <span class="trait">New York City</span>
+        <span class="trait">Sports Business</span>
+        <span class="trait-more">+2</span>
+      </div>
+      <div class="hero-footer">
+        <div class="ft-show"><b>MiTL Sports Desk</b> · NFL · NYC</div>
+        <div class="vp">
+          View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Maya — Studio / Community ═══ -->
+  <div class="card" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&h=400&fit=crop&crop=faces" alt="Maya">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Maya</div>
+      <div class="card-role">Community Correspondent — Culture & Lifestyle</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+      </div>
+      <div class="card-desc">I find the stories that don't make headlines but should. The people, the neighborhoods, the culture that defines how we actually live.</div>
+      <div class="card-traits">
+        <span class="trait">Culture</span>
+        <span class="trait">Lifestyle</span>
+        <span class="trait">Community</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Community</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Dr. Peter Parkher — Studio / Investigative ═══ -->
+  <div class="card" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=400&fit=crop&crop=faces" alt="Dr. Peter Parkher">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Dr. Peter Parkher</div>
+      <div class="card-role">Investigative Journalist</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+      </div>
+      <div class="card-desc">I dig where others won't. Every story has a paper trail — and I follow it until someone gets uncomfortable.</div>
+      <div class="card-traits">
+        <span class="trait">Investigative</span>
+        <span class="trait">Journalism</span>
+        <span class="trait">Deep Dives</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Investigations</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GlAldys Mornings — Studio ═══ -->
+  <div class="card" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=400&fit=crop&crop=faces" alt="GlAldys Mornings">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">GlAldys Mornings</div>
+      <div class="card-role">Morning Show Personality</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+      </div>
+      <div class="card-desc">Good morning. I bring the warmth, the wit, and the wake-up call. Every morning needs an anchor — I'm yours.</div>
+      <div class="card-traits">
+        <span class="trait">Morning Show</span>
+        <span class="trait">Personality</span>
+        <span class="trait">Lifestyle</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Morning</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Christopher "CMarty Fit" Martin — Studio ═══ -->
+  <div class="card" data-type="studio">
+    <div class="card-photo">
+      <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=400&fit=crop&crop=faces" alt="Christopher CMarty Fit Martin">
+      <div class="photo-overlay">
+        <span class="tr studio-badge">Studio</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Christopher "CMarty Fit" Martin</div>
+      <div class="card-role">Fitness & Wellness Correspondent</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="studio">Studio</span>
+      </div>
+      <div class="card-desc">Fitness isn't a trend — it's a discipline. I cut through the noise and bring you what actually works.</div>
+      <div class="card-traits">
+        <span class="trait">Fitness</span>
+        <span class="trait">Wellness</span>
+        <span class="trait">Nutrition</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>MiTL</b> · Wellness</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CORRESPONDENT CARDS ═══ -->
+
+  <!-- Amara Diallo-Nguyen -->
+  <div class="card" data-type="correspondent">
+    <div class="card-photo">
+      <div class="initials">AD</div>
+      <div class="photo-overlay">
+        <span class="tr corr-badge">Correspondent</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Amara Diallo-Nguyen</div>
+      <div class="card-role">MiTL Sports Desk — Minneapolis · NFL Correspondent</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="correspondent">Correspondent</span>
+      </div>
+      <div class="card-desc">Minneapolis doesn't just watch football — we live it. I cover the Vikings and the culture around the North.</div>
+      <div class="card-traits">
+        <span class="trait">NFL</span>
+        <span class="trait">Minneapolis</span>
+        <span class="trait">Vikings</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>Sports Desk</b> · NFL</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agnes Szymanski -->
+  <div class="card" data-type="correspondent">
+    <div class="card-photo">
+      <div class="initials">AS</div>
+      <div class="photo-overlay">
+        <span class="tr corr-badge">Correspondent</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Agnes Szymanski</div>
+      <div class="card-role">Victoria Morning Wire Correspondent</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="correspondent">Correspondent</span>
+      </div>
+      <div class="card-desc">Victoria's stories move quietly — but they matter. I bring the island's voice to the morning wire before the mainland wakes up.</div>
+      <div class="card-traits">
+        <span class="trait">Morning Wire</span>
+        <span class="trait">Victoria</span>
+        <span class="trait">Regional News</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>Morning Wire</b> · Victoria</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Erick Flores-Bautista -->
+  <div class="card" data-type="correspondent">
+    <div class="card-photo">
+      <div class="initials">EF</div>
+      <div class="photo-overlay">
+        <span class="tr corr-badge">Correspondent</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Erick Flores-Bautista</div>
+      <div class="card-role">MiTL Sports Desk — Los Angeles · NFL Correspondent</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="correspondent">Correspondent</span>
+      </div>
+      <div class="card-desc">LA has two teams and ten million opinions. I cover the Rams, the Chargers, and the culture that ties them together.</div>
+      <div class="card-traits">
+        <span class="trait">NFL</span>
+        <span class="trait">Los Angeles</span>
+        <span class="trait">Rams</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>Sports Desk</b> · NFL · LA</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cassidy Redcloud -->
+  <div class="card" data-type="correspondent">
+    <div class="card-photo">
+      <div class="initials">CR</div>
+      <div class="photo-overlay">
+        <span class="tr corr-badge">Correspondent</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-nm">Cassidy Redcloud</div>
+      <div class="card-role">Calgary Morning Wire Correspondent</div>
+      <div class="card-badges">
+        <span class="bg bg-type" data-t="correspondent">Correspondent</span>
+      </div>
+      <div class="card-desc">Calgary wakes up early and moves fast. I make sure the morning wire keeps pace with the energy of this city.</div>
+      <div class="card-traits">
+        <span class="trait">Morning Wire</span>
+        <span class="trait">Calgary</span>
+        <span class="trait">Regional</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="ft-show"><b>Morning Wire</b> · Calgary</div>
+      <div class="vp">
+        View Profile <svg class="ar" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // Filter chips
+  const chips = document.querySelectorAll('.ch');
+  const cards = document.querySelectorAll('.grid > [data-type]');
+  const counter = document.querySelector('.ct strong');
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+
+      const type = chip.dataset.type;
+      let visible = 0;
+
+      cards.forEach(card => {
+        if (!type) {
+          card.style.display = '';
+          visible++;
+        } else if (type === 'license') {
+          const isLicensable = card.classList.contains('licensable') ||
+            card.querySelector('.bg-license') ||
+            card.querySelector('.license-btn');
+          card.style.display = isLicensable ? '' : 'none';
+          if (isLicensable) visible++;
+        } else {
+          const match = card.dataset.type === type;
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        }
+      });
+
+      if (counter) counter.textContent = type ? visible : '100';
+    });
+  });
+
+  // Search
+  const search = document.querySelector('.search');
+  if (search) {
+    search.addEventListener('input', () => {
+      const q = search.value.toLowerCase().trim();
+      let visible = 0;
+
+      // Reset chips to "All" on search
+      if (q) {
+        chips.forEach(c => c.classList.remove('on'));
+        chips[0].classList.add('on');
+      }
+
+      cards.forEach(card => {
+        if (!q) {
+          card.style.display = '';
+          visible++;
+          return;
+        }
+        const text = card.textContent.toLowerCase();
+        const match = text.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+
+      if (counter) counter.textContent = q ? visible : '100';
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
