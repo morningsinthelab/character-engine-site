@@ -29,7 +29,7 @@ MARKETS = {
             ("What can AI characters do for my brand?", "AI characters build memory (they remember every interaction), build brand authority (a consistent voice that never goes off-brand), and blur reality (audiences engage with them like real people). They can host live streams, produce social content, answer questions, onboard users, and represent your brand 24/7."),
             ("Can I build a custom character or do I have to license one?", "Both. You can build a fully custom character from scratch — we handle the architecture, visual identity, backstory, and deployment. Or you can license one of our 22+ existing characters from the MiTL universe for your campaigns and activations."),
             ("How does Character Engine work?", "We follow a four-step process: Discovery (understanding your brand and audience), Architecture (designing the character's personality, backstory, and visual identity), Build and Deploy (bringing the character to life across your platforms), and Manage and Grow (evolving the character over time with memory and new content)."),
-            ("Who is behind Character Engine?", "Character Engine is built and operated by MiTL Studio, the team behind Mornings in the Lab — a daily live broadcast network with 1,000+ episodes and 22+ AI characters already deployed and active."),
+            ("Who is behind Character Engine?", "Character Engine is built and operated by MiTL Studio, the team behind Mornings in the Lab — a daily live broadcast network with 800+ episodes and 22+ AI characters already deployed and active."),
         ]
     },
     "ecommerce": {
